@@ -31,7 +31,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'pin'=>$pin
+            'pin' => $pin
         ]);
 
         return response()->json([
