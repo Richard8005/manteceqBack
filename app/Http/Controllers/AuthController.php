@@ -25,14 +25,18 @@ class AuthController extends Controller
             'password' => 'required|string'
         ]);
 
+        $pin= rand(100000,999999);
+
         User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password)
+            'password' => bcrypt($request->password),
+            'pin'=>$pin
         ]);
 
         return response()->json([
-            'message' => 'Successfully created user!'
+            'message' => 'Successfully created user!',
+            'pin'=> $pin,
         ], 201);
     }
   

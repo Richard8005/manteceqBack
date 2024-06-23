@@ -35,6 +35,7 @@ return [
 
     'mailers' => [
         'smtp' => [
+            'driver' =>env('MAIL_MAILER', 'smtp'),
             'transport' => 'smtp',
             'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
             'port' => env('MAIL_PORT', 587),
@@ -79,7 +80,6 @@ return [
             ],
         ],
     ],
-
     /*
     |--------------------------------------------------------------------------
     | Global "From" Address
