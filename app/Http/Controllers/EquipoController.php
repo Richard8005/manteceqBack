@@ -2,66 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Equipo;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\Equipo;
 
 class EquipoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Muestra una lista de todos los equipos.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+        $equipos = Equipo::all();
+        return response()->json($equipos);
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Almacena un nuevo equipo en la base de datos.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'codigo_inventario' => 'required|string|unique:equipos,codigo_inventario',
+            'user_id' => 'required|exists:users,id',
+            'ambiente_id' => 'required|exists:ambientes,id',
+            'categoria_id' => 'required|exists:categorias,id',
+            'descripcion' => 'required|string',
+            'marca' => 'required|string|max:50',
+            'aceptacion_cuentadancia' => 'required|integer|between:0,1',
+        ]);
+
+        $equipo = Equipo::create([
+            'codigo_inventario' => $request->codigo_inventario,
+            'user_id' => $request->user_id,
+            'ambiente_id' => $request->ambiente_id,
+            'categoria_id' => $request->categoria_id,
+            'descripcion' => $request->descripcion,
+            'marca' => $request->marca,
+            'aceptacion_cuentadancia' => $request->aceptacion_cuentadancia,
+        ]);
+
+        return response()->json([
+            'message' => 'Equipo creado exitosamente',
+            'equipo' => $equipo,
+        ], 201);
     }
 
     /**
-     * Display the specified resource.
+     * Muestra un equipo específico.
      *
      * @param  \App\Models\Equipo  $equipo
      * @return \Illuminate\Http\Response
      */
     public function show(Equipo $equipo)
     {
-        //
+        return response()->json($equipo);
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Equipo  $equipo
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Equipo $equipo)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Actualiza un equipo específico.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Equipo  $equipo
@@ -69,17 +73,44 @@ class EquipoController extends Controller
      */
     public function update(Request $request, Equipo $equipo)
     {
-        //
+        $request->validate([
+            'codigo_inventario' => 'required|string|unique:equipos,codigo_inventario,' . $equipo->codigo_inventario . ',codigo_inventario',
+            'user_id' => 'required|exists:users,id',
+            'ambiente_id' => 'required|exists:ambientes,id',
+            'categoria_id' => 'required|exists:categorias,id',
+            'descripcion' => 'required|string',
+            'marca' => 'required|string|max:50',
+            'aceptacion_cuentadancia' => 'required|integer|between:0,1',
+        ]);
+
+        $equipo->update([
+            'codigo_inventario' => $request->codigo_inventario,
+            'user_id' => $request->user_id,
+            'ambiente_id' => $request->ambiente_id,
+            'categoria_id' => $request->categoria_id,
+            'descripcion' => $request->descripcion,
+            'marca' => $request->marca,
+            'aceptacion_cuentadancia' => $request->aceptacion_cuentadancia,
+        ]);
+
+        return response()->json([
+            'message' => 'Equipo actualizado exitosamente',
+            'equipo' => $equipo
+        ]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un equipo específico.
      *
      * @param  \App\Models\Equipo  $equipo
      * @return \Illuminate\Http\Response
      */
     public function destroy(Equipo $equipo)
     {
-        //
+        $equipo->delete();
+
+        return response()->json([
+            'message' => 'Equipo eliminado exitosamente'
+        ]);
     }
 }
