@@ -2,84 +2,106 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ambiente;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Ambiente;
 
 class AmbienteController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostrar una lista de todos los ambientes.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        //
+        $ambientes = Ambiente::all();
+        return response()->json($ambientes);
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Almacenar un nuevo ambiente.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+        ]);
+
+        $ambiente = Ambiente::create([
+            'nombre' => $request->nombre,
+        ]);
+
+        return response()->json([
+            'message' => 'Ambiente creado exitosamente',
+            'ambiente' => $ambiente
+        ], 201);
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar un ambiente específico.
      *
-     * @param  \App\Models\Ambiente  $ambiente
-     * @return \Illuminate\Http\Response
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Ambiente $ambiente)
+    public function show($id)
     {
-        //
+        $ambiente = Ambiente::find($id);
+
+        if (!$ambiente) {
+            return response()->json(['message' => 'Ambiente no encontrado'], 404);
+        }
+
+        return response()->json($ambiente);
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Ambiente  $ambiente
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Ambiente $ambiente)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Actualizar un ambiente existente.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Ambiente  $ambiente
-     * @return \Illuminate\Http\Response
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Ambiente $ambiente)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+        ]);
+
+        $ambiente = Ambiente::find($id);
+
+        if (!$ambiente) {
+            return response()->json(['message' => 'Ambiente no encontrado'], 404);
+        }
+
+        $ambiente->nombre = $request->nombre;
+        $ambiente->save();
+
+        return response()->json([
+            'message' => 'Ambiente actualizado exitosamente',
+            'ambiente' => $ambiente
+        ]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar un ambiente existente.
      *
-     * @param  \App\Models\Ambiente  $ambiente
-     * @return \Illuminate\Http\Response
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Ambiente $ambiente)
+    public function destroy($id)
     {
-        //
+        $ambiente = Ambiente::find($id);
+
+        if (!$ambiente) {
+            return response()->json(['message' => 'Ambiente no encontrado'], 404);
+        }
+
+        $ambiente->delete();
+
+        return response()->json(['message' => 'Ambiente eliminado exitosamente']);
     }
 }
